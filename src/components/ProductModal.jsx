@@ -1,7 +1,8 @@
 import axios from "axios";
 import { useEffect, useRef } from "react";
 import { Modal } from "bootstrap";
-
+import { useDispatch } from "react-redux";
+import { addToast } from "../redux/slices/toastSlice";
 const url = import.meta.env.VITE_BASE_URL;
 const api_path = import.meta.env.VITE_API_PATH;
 function ProductModal({
@@ -13,6 +14,7 @@ function ProductModal({
 }) {
   const fileInputRef = useRef(null);
   const productModalRef = useRef(null);
+  const dispatch = useDispatch();
 
   // 建立產品modal
   useEffect(() => {
@@ -44,10 +46,21 @@ function ProductModal({
           },
         },
       });
+      dispatch(
+        addToast({
+          text: mode === "edit" ? "更新成功" : "新增成功",
+          status: "success",
+        })
+      );
       getProducts();
       handleCloseProductModal();
     } catch (error) {
-      alert("新增失敗");
+      dispatch(
+        addToast({
+          text: mode === "edit" ? "更新失敗" : "新增失敗",
+          status: "danger",
+        })
+      );
       console.error("發生錯誤:", error);
       handleCloseProductModal();
     }

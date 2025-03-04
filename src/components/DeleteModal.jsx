@@ -1,13 +1,15 @@
 import axios from "axios";
 import { useEffect, useRef } from "react";
 import { Modal } from "bootstrap";
+import { useDispatch } from "react-redux";
+import { addToast } from "../redux/slices/toastSlice";
 
 const url = import.meta.env.VITE_BASE_URL;
 const api_path = import.meta.env.VITE_API_PATH;
 
 function DeleteModal({ deleteModalInstanceRef, tempProduct, getProducts }) {
   const deleteModalRef = useRef(null);
-
+  const dispatch = useDispatch();
   // 建立刪除modal
   useEffect(() => {
     if (deleteModalRef.current) {
@@ -25,11 +27,12 @@ function DeleteModal({ deleteModalInstanceRef, tempProduct, getProducts }) {
       await axios.delete(
         `${url}/v2/api/${api_path}/admin/product/${tempProduct.id}`
       );
+      dispatch(addToast({ text: "刪除成功", status: "success" }));
       getProducts();
       handleCloseDeleteModal();
     } catch (error) {
+      dispatch(addToast({ text: "刪除失敗", status: "error" }));
       console.error("發生錯誤:", error);
-      alert("刪除失敗");
     }
   };
 

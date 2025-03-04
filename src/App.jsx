@@ -77,6 +77,7 @@ function App() {
           pageInfo={pageInfo}
           products={products}
           getProducts={getProducts}
+          setAuth={setAuth}
         />
       ) : (
         <LoginPages

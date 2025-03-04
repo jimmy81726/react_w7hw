@@ -1,11 +1,13 @@
 import { useState, useRef } from "react";
-
+import axios from "axios";
 import ProductTable from "../components/ProductTable";
 import Pagination from "../components/Pagination";
 import ProductModal from "../components/ProductModal";
 import DeleteModal from "../components/DeleteModal";
+import MessageToast from "../components/MessageToast";
+const url = import.meta.env.VITE_BASE_URL;
 
-function ProductPages({ pageInfo, products, getProducts }) {
+function ProductPages({ pageInfo, products, getProducts, setAuth }) {
   const defaultModalState = {
     imageUrl: "",
     title: "",
@@ -41,8 +43,30 @@ function ProductPages({ pageInfo, products, getProducts }) {
     // 打開刪除modal的時候,要顯示當下的那個產品title,所以需要再刷新一次
     deleteModalInstanceRef.current.show();
   };
+  const logout = async () => {
+    try {
+      await axios.post(`${url}/v2/logout`);
+      // 清除 token
+      document.cookie =
+        "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      setAuth(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div className="container py-5">
+      <div className="row mb-3">
+        <div className="justify-content-end">
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => logout()}
+          >
+            登出
+          </button>
+        </div>
+      </div>
       <ProductTable
         handleOpenProductModal={handleOpenProductModal}
         handleOpenDeleteModal={handleOpenDeleteModal}
@@ -62,6 +86,7 @@ function ProductPages({ pageInfo, products, getProducts }) {
         tempProduct={tempProduct}
         deleteModalInstanceRef={deleteModalInstanceRef}
       />
+      <MessageToast />
     </div>
   );
 }
